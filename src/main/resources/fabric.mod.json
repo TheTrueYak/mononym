@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "mononym",
+	"version": "${version}",
+	"name": "Mononym",
+	"description": "name tags",
+	"authors": [
+		"TheTrueYak"
+	],
+	"contact": {
+		"sources": "https://github.com/TheTrueYak/mononym"
+	},
+	"license": "ARR",
+	"icon": "assets/mononym/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.yak.mononym.Mononym"
+		]
+	},
+	"mixins": [
+		"mononym.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

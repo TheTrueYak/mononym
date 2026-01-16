@@ -1,0 +1,18 @@
+{
+	"required": true,
+	"package": "net.yak.mononym.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+      "ItemMixin"
+	],
+	"client": [
+		"client.HandledScreenMixin",
+		"client.AnvilScreenMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
