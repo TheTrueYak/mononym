@@ -16,7 +16,7 @@ import net.yak.mononym.networking.NameTagRenameC2SPayload;
 public class NametagRenameScreen extends Screen {
 
     private static final ButtonTextures APPLY_BUTTON_TEXTURES = new ButtonTextures(Mononym.id("apply_button"), Mononym.id("apply_button_highlighted"));
-    private static final ButtonTextures CANCEL_BUTTON_TEXTURES = new ButtonTextures(Mononym.id("cancel_button"), Mononym.id("apply_button_highlighted"));
+    private static final ButtonTextures CANCEL_BUTTON_TEXTURES = new ButtonTextures(Mononym.id("cancel_button"), Mononym.id("cancel_button_highlighted"));
     private TextFieldWidget textField;
     private TexturedButtonWidget applyButton;
     private TexturedButtonWidget cancelButton;
@@ -42,16 +42,14 @@ public class NametagRenameScreen extends Screen {
         this.addDrawableChild(this.textField);
         this.setInitialFocus(this.textField);
 
-        this.applyButton = new TexturedButtonWidget(halfHeight + 200, halfHeight + 14, 10, 10, APPLY_BUTTON_TEXTURES, pressAction -> {
-            if (!this.textField.getText().isEmpty()) {
-                ClientPlayNetworking.send(new NameTagRenameC2SPayload(this.client.player.getId(), this.handId, this.textField.getText()));
-                this.close();
-            }
+        this.applyButton = new TexturedButtonWidget(halfWidth + 70, halfHeight - 8, 9, 9, APPLY_BUTTON_TEXTURES, buttonWidget -> {
+            ClientPlayNetworking.send(new NameTagRenameC2SPayload(this.client.player.getId(), this.handId, this.textField.getText()));
+            this.close();
         });
-        this.applyButton.active = canApply();
+        this.applyButton.active = this.canApply();
         this.addDrawableChild(applyButton);
 
-        this.cancelButton = new TexturedButtonWidget(halfHeight + 187, halfHeight + 14, 10, 10, CANCEL_BUTTON_TEXTURES, pressAction -> {
+        this.cancelButton = new TexturedButtonWidget(halfWidth + 57, halfHeight - 8, 9, 9, CANCEL_BUTTON_TEXTURES, buttonWidget -> {
             this.close();
         });
         this.cancelButton.active = true;
@@ -80,18 +78,23 @@ public class NametagRenameScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        this.applyButton.active = this.canApply();
+        boolean value = super.keyPressed(keyCode, scanCode, modifiers);
         if (keyCode == 257) { // (enter key)
             if (this.applyButton.active) {
-                if (!this.textField.getText().isEmpty()) {
-                    ClientPlayNetworking.send(new NameTagRenameC2SPayload(this.client.player.getId(), this.handId, this.textField.getText()));
-                    this.close();
-                }
+                ClientPlayNetworking.send(new NameTagRenameC2SPayload(this.client.player.getId(), this.handId, this.textField.getText()));
+                this.close();
                 return true;
             }
         }
-        boolean value = super.keyPressed(keyCode, scanCode, modifiers);
-        this.applyButton.active = canApply();
+        this.applyButton.active = this.canApply();
         return value;
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        this.applyButton.active = this.canApply();
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -102,7 +105,10 @@ public class NametagRenameScreen extends Screen {
     private boolean canApply() {
         String currentName = this.stack.contains(DataComponentTypes.CUSTOM_NAME) ? this.stack.get(DataComponentTypes.CUSTOM_NAME).getString() : "";
         String newName = this.textField.getText();
-        return !(currentName.equals(newName) || newName.isBlank());
+        if (newName.isBlank() && this.stack.contains(DataComponentTypes.CUSTOM_NAME)) {
+            return true;
+        }
+        return !(currentName.equals(newName));
     }
 
     public static void open(ItemStack stack, int id) {

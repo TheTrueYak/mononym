@@ -33,18 +33,12 @@ public class Mononym implements ModInitializer {
 		ServerPlayNetworking.registerGlobalReceiver(NameTagRenameC2SPayload.ID, new NameTagRenameC2SPayload.Receiver());
 
 
-
-
-
-
 		FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(modContainer -> ResourceManagerHelper.registerBuiltinResourcePack(id("name_tag_recipe"), modContainer, ResourcePackActivationType.DEFAULT_ENABLED));
-
 	}
 
 	private static <S extends RecipeSerializer<T>, T extends Recipe<?>> S registerRecipe(String id, S serializer) {
 		return Registry.register(Registries.RECIPE_SERIALIZER, id(id), serializer);
 	}
-
 
 	public static Identifier id(String id) {
 		return Identifier.of(MOD_ID, id);

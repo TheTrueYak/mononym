@@ -33,7 +33,12 @@ public record NameTagRenameC2SPayload(int entityId, int handId, String name) imp
             if (entity instanceof PlayerEntity playerEntity) {
                 ItemStack stack = playerEntity.getStackInHand(payload.handId() == 0 ? Hand.MAIN_HAND : Hand.OFF_HAND);
                 if (stack.isOf(Items.NAME_TAG)) {
-                    stack.set(DataComponentTypes.CUSTOM_NAME, Text.literal(payload.name()));
+                    if (payload.name.isBlank() && stack.contains(DataComponentTypes.CUSTOM_NAME)) {
+                        stack.remove(DataComponentTypes.CUSTOM_NAME);
+                    }
+                    else {
+                        stack.set(DataComponentTypes.CUSTOM_NAME, Text.literal(payload.name()));
+                    }
                 }
             }
         }

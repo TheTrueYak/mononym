@@ -3,7 +3,7 @@
 	"id": "mononym",
 	"version": "${version}",
 	"name": "Mononym",
-	"description": "name tags",
+	"description": "Makes various tweaks to name tags and makes them more awesome",
 	"authors": [
 		"TheTrueYak"
 	],

@@ -6,7 +6,7 @@
       "item": "minecraft:paper"
     },
 	"I": {
-      "item": "minecraft:iron_nugget"
+      "tag": "minecraft:metal_nuggets"
     }
   },
   "pattern": [

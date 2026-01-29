@@ -2,6 +2,7 @@ package net.yak.mononym.mixin.client;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Cancellable;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
@@ -11,6 +12,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AnvilScreen.class)
 public abstract class AnvilScreenMixin {
@@ -20,10 +22,16 @@ public abstract class AnvilScreenMixin {
     @Shadow @Final private static Identifier TEXT_FIELD_DISABLED_TEXTURE;
 
     @WrapOperation(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;addSelectableChild(Lnet/minecraft/client/gui/Element;)Lnet/minecraft/client/gui/Element;"))
-    private Element mononym$removeAnvilTextAccess(AnvilScreen instance, Element element, Operation<Element> original) {
+    private Element mononym$removeAnvilText(AnvilScreen instance, Element element, Operation<Element> original, @Cancellable CallbackInfo ci) {
+        this.nameField.setDimensions(0, 0);
+        this.nameField.setMaxLength(0);
         this.nameField.setFocused(false);
-        this.nameField.setEditable(false);
         return null;
+    }
+
+    @WrapOperation(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/TextFieldWidget;setEditable(Z)V"))
+    private void mononym$removeAnvilTextAccess(TextFieldWidget instance, boolean editable, Operation<Void> original) {
+        original.call(instance, false);
     }
 
     @WrapOperation(method = "renderForeground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/TextFieldWidget;render(Lnet/minecraft/client/gui/DrawContext;IIF)V"))
