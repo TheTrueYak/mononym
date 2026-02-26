@@ -34,11 +34,12 @@ public class NametagRenameScreen extends Screen {
     protected void init() {
         int halfWidth = this.width / 2;
         int halfHeight = this.height / 2;
+        Text name = this.stack.get(DataComponentTypes.CUSTOM_NAME);
 
-        this.textField = new TextFieldWidget(client.textRenderer, halfWidth - 75, halfHeight - 30, 150, 17, null, stack.getName());
+        this.textField = new TextFieldWidget(client.textRenderer, halfWidth - 75, halfHeight - 28, 150, 17, null, stack.getName());
         this.textField.setDrawsBackground(false);
         this.textField.setMaxLength(50);
-        this.textField.setText("");
+        this.textField.setText(name != null ? name.getString() : ""); // sets default to current name, otherwise leaves blank
         this.addDrawableChild(this.textField);
         this.setInitialFocus(this.textField);
 
@@ -55,9 +56,6 @@ public class NametagRenameScreen extends Screen {
         this.cancelButton.active = true;
         this.addDrawableChild(cancelButton);
 
-        if (this.stack.contains(DataComponentTypes.CUSTOM_NAME)) { // sets default to current name
-            this.textField.setText(this.stack.get(DataComponentTypes.CUSTOM_NAME).getString());
-        }
     }
 
     @Override
@@ -67,13 +65,7 @@ public class NametagRenameScreen extends Screen {
                 Mononym.id("textures/gui/name_tag_screen.png"),
                 context.getScaledWindowWidth() / 2 - 120,
                 context.getScaledWindowHeight() / 2 - 60,
-                0,
-                0,
-                256,
-                150,
-                256,
-                256
-        );
+                0, 0, 256, 150, 256, 256);
     }
 
     @Override

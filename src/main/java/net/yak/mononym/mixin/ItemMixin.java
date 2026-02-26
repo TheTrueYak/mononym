@@ -7,15 +7,19 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ClickType;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.yak.mononym.client.screen.NametagRenameScreen;
 import org.spongepowered.asm.mixin.Mixin;
+
+import java.util.List;
 
 @Mixin(Item.class)
 public abstract class ItemMixin {
@@ -39,7 +43,7 @@ public abstract class ItemMixin {
 	private boolean mononym$renameWithClick(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player, Operation<Boolean> original) {
 		if (clickType == ClickType.RIGHT && !stack.isEmpty() && stack.isOf(Items.NAME_TAG)) {
 			ItemStack slotStack = slot.getStack();
-			if (!slotStack.isEmpty()) {
+			if (!slotStack.isEmpty() && !slotStack.isOf(Items.NAME_TAG)) {
 				if (stack.isOf(Items.NAME_TAG) && stack.contains(DataComponentTypes.CUSTOM_NAME)) {
 					if (!stack.getName().equals(slotStack.getName())) {
 						slotStack.set(DataComponentTypes.CUSTOM_NAME, stack.getName());
@@ -54,6 +58,14 @@ public abstract class ItemMixin {
 			}
 		}
 		return original.call(stack, slot, clickType, player);
+	}
+
+	@WrapMethod(method = "appendTooltip")
+	private void mononym$nameTagTooltipText(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type, Operation<Void> original) {
+		if (stack.isOf(Items.NAME_TAG)) {
+			tooltip.add(Text.literal("[").formatted(Formatting.GRAY).append(Text.translatable("tooltip.mononym.use").formatted(Formatting.GOLD).append(Text.literal("]").append(Text.translatable("tooltip.mononym.rename")).formatted(Formatting.GRAY))));
+		}
+		original.call(stack, context, tooltip, type);
 	}
 
 

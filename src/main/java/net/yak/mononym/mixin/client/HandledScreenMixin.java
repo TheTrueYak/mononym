@@ -50,10 +50,10 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         if (this.focusedSlot != null) {
             ItemStack hoveredStack = this.focusedSlot.getStack().copy();
             if (cursorStack.isOf(Items.NAME_TAG) && cursorStack.contains(DataComponentTypes.CUSTOM_NAME) && hoveredStack != null && !hoveredStack.isEmpty() && !hoveredStack.isOf(Items.NAME_TAG) && !cursorStack.getName().equals(hoveredStack.getName())) {
-                context.drawGuiTexture(SELECTION_OVERLAY, x, y, 16, 16);
-                hoveredStack.set(DataComponentTypes.CUSTOM_NAME, hoveredStack.getName().copy().append(Text.literal(" -> ")).append(cursorStack.getName().copy()));
-                context.drawTooltip(this.textRenderer, getTooltipFromItem(client, hoveredStack), hoveredStack.getTooltipData(), x, y);
-            }
+                context.drawGuiTexture(SELECTION_OVERLAY, x - 1, y - 1, 18, 18);
+                hoveredStack.set(DataComponentTypes.CUSTOM_NAME, hoveredStack.getName().copy().append(Text.literal(" ↓ ")).append(cursorStack.getName().copy()));
+                context.drawTooltip(this.textRenderer, getTooltipFromItem(client, hoveredStack), hoveredStack.getTooltipData(), mouseX, mouseY);
+            } // TODO: make tooltip follow mouse to prevent text overlaying, TODO: down arrow?
         }
     }
 
