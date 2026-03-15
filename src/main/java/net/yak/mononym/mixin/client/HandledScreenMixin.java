@@ -1,13 +1,18 @@
 package net.yak.mononym.mixin.client;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
@@ -26,20 +31,25 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
+import java.util.List;
+
 @Mixin(HandledScreen.class)
 public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen {
 
     @Shadow @Final protected T handler;
     @Shadow @Nullable protected Slot focusedSlot;
+
+    @Shadow @org.jspecify.annotations.Nullable protected abstract Slot getSlotAt(double mouseX, double mouseY);
+
     @Unique private static final Identifier SELECTION_OVERLAY = Mononym.id("selection_overlay");
 
     protected HandledScreenMixin(Text title) {
         super(title);
     }
 
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;drawSlotHighlight(Lnet/minecraft/client/gui/DrawContext;III)V"))
-    private void mononym$selectionOverlay(DrawContext context, int x, int y, int z, Operation<Void> original, DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        original.call(context, x, y, z);
+    @WrapMethod(method = "renderCursorStack")
+    private void mononym$selectionOverlayTooltip(DrawContext context, int mouseX, int mouseY, Operation<Void> original) {
+        original.call(context, mouseX, mouseY);
         MinecraftClient client = MinecraftClient.getInstance();
         ItemStack cursorStack = this.handler.getCursorStack();
         if (client.currentScreen instanceof CreativeInventoryScreen creativeInventoryScreen) {
@@ -50,10 +60,33 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         if (this.focusedSlot != null) {
             ItemStack hoveredStack = this.focusedSlot.getStack().copy();
             if (cursorStack.isOf(Items.NAME_TAG) && cursorStack.contains(DataComponentTypes.CUSTOM_NAME) && hoveredStack != null && !hoveredStack.isEmpty() && !hoveredStack.isOf(Items.NAME_TAG) && !cursorStack.getName().equals(hoveredStack.getName())) {
-                context.drawGuiTexture(SELECTION_OVERLAY, x - 1, y - 1, 18, 18);
-                hoveredStack.set(DataComponentTypes.CUSTOM_NAME, hoveredStack.getName().copy().append(Text.literal(" ↓ ")).append(cursorStack.getName().copy()));
-                context.drawTooltip(this.textRenderer, getTooltipFromItem(client, hoveredStack), hoveredStack.getTooltipData(), mouseX, mouseY);
-            } // TODO: make tooltip follow mouse to prevent text overlaying, TODO: down arrow?
+                context.drawTooltip(this.textRenderer, getTooltipFromItem(client, hoveredStack), hoveredStack.getTooltipData(), mouseX, mouseY, hoveredStack.get(DataComponentTypes.TOOLTIP_STYLE));
+                Text hoveredStackText = hoveredStack.getName();
+                Text cursorStackText = cursorStack.getName();
+                int offset = textRenderer.getWidth(hoveredStackText.asOrderedText());
+                int i = textRenderer.getWidth(cursorStackText.asOrderedText());
+                int j = mouseX + offset / 2;
+                TooltipComponent tooltipComponent = TooltipComponent.of(cursorStackText.asOrderedText());
+                context.drawTooltipImmediately(textRenderer, List.of(tooltipComponent), j - i / 2, mouseY - 15, HoveredTooltipPositioner.INSTANCE, cursorStack.get(DataComponentTypes.TOOLTIP_STYLE));
+            }
+        }
+    }
+
+    @WrapMethod(method = "drawSlotHighlightFront")
+    private void mononym$selectionOverlay(DrawContext context, Operation<Void> original) {
+        original.call(context);
+        MinecraftClient client = MinecraftClient.getInstance();
+        ItemStack cursorStack = this.handler.getCursorStack();
+        if (client.currentScreen instanceof CreativeInventoryScreen creativeInventoryScreen) {
+            if (!creativeInventoryScreen.isInventoryTabSelected()) {
+                return;
+            }
+        }
+        if (this.focusedSlot != null) {
+            ItemStack hoveredStack = this.focusedSlot.getStack().copy();
+            if (cursorStack.isOf(Items.NAME_TAG) && cursorStack.contains(DataComponentTypes.CUSTOM_NAME) && hoveredStack != null && !hoveredStack.isEmpty() && !hoveredStack.isOf(Items.NAME_TAG) && !cursorStack.getName().equals(hoveredStack.getName())) {
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, SELECTION_OVERLAY, this.focusedSlot.x - 1, this.focusedSlot.y - 1, 18, 18);
+            }
         }
     }
 

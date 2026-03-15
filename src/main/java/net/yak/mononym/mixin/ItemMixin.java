@@ -7,34 +7,29 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.ClickType;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.yak.mononym.client.screen.NametagRenameScreen;
 import org.spongepowered.asm.mixin.Mixin;
-
-import java.util.List;
 
 @Mixin(Item.class)
 public abstract class ItemMixin {
 
 	@WrapMethod(method = "use")
-	private TypedActionResult<ItemStack> mononym$nameTagScreen(World world, PlayerEntity user, Hand hand, Operation<TypedActionResult<ItemStack>> original) {
+	private ActionResult mononym$nameTagScreen(World world, PlayerEntity user, Hand hand, Operation<ActionResult> original) {
 		ItemStack stack = user.getStackInHand(hand);
 		if (stack.isOf(Items.NAME_TAG)) {
 			user.setCurrentHand(hand);
-			if (world.isClient) {
+			if (world.isClient()) {
 				NametagRenameScreen.open(stack, hand == Hand.MAIN_HAND ? 0 : 1);
 				user.swingHand(hand);
-				return TypedActionResult.success(stack);
+				return ActionResult.SUCCESS;
 			}
-			return TypedActionResult.pass(user.getStackInHand(hand));
+			return ActionResult.PASS;
 		}
 		return original.call(world, user, hand);
 	}
@@ -49,7 +44,7 @@ public abstract class ItemMixin {
 						slotStack.set(DataComponentTypes.CUSTOM_NAME, stack.getName());
 						stack.decrement(1);
 						slot.markDirty();
-						if (player.getWorld().isClient()) {
+						if (player.getEntityWorld().isClient()) {
 							player.playSound(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, 1.0f, 1.0f);
 						}
 					}
@@ -59,15 +54,5 @@ public abstract class ItemMixin {
 		}
 		return original.call(stack, slot, clickType, player);
 	}
-
-	@WrapMethod(method = "appendTooltip")
-	private void mononym$nameTagTooltipText(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type, Operation<Void> original) {
-		if (stack.isOf(Items.NAME_TAG)) {
-			tooltip.add(Text.literal("[").formatted(Formatting.GRAY).append(Text.translatable("tooltip.mononym.use").formatted(Formatting.GOLD).append(Text.literal("]").append(Text.translatable("tooltip.mononym.rename")).formatted(Formatting.GRAY))));
-		}
-		original.call(stack, context, tooltip, type);
-	}
-
-
 
 }

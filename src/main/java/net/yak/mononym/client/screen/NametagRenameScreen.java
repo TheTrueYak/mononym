@@ -2,11 +2,14 @@ package net.yak.mononym.client.screen;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -61,7 +64,7 @@ public class NametagRenameScreen extends Screen {
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
         super.renderBackground(context, mouseX, mouseY, delta);
-        context.drawTexture(
+        context.drawTexture(RenderPipelines.GUI_TEXTURED,
                 Mononym.id("textures/gui/name_tag_screen.png"),
                 context.getScaledWindowWidth() / 2 - 120,
                 context.getScaledWindowHeight() / 2 - 60,
@@ -69,10 +72,10 @@ public class NametagRenameScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyInput input) {
         this.applyButton.active = this.canApply();
-        boolean value = super.keyPressed(keyCode, scanCode, modifiers);
-        if (keyCode == 257) { // (enter key)
+        boolean value = super.keyPressed(input);
+        if (input.getKeycode() == 257) { // (enter key)
             if (this.applyButton.active) {
                 ClientPlayNetworking.send(new NameTagRenameC2SPayload(this.client.player.getId(), this.handId, this.textField.getText()));
                 this.close();
@@ -84,9 +87,9 @@ public class NametagRenameScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(Click click, boolean doubled) {
         this.applyButton.active = this.canApply();
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(click, doubled);
     }
 
     @Override

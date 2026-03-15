@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "P": {
-      "item": "minecraft:paper"
-    },
-	"I": {
-      "tag": "minecraft:metal_nuggets"
-    }
+    "P": "minecraft:paper",
+	"I": "#minecraft:metal_nuggets"
   },
   "pattern": [
     " I",

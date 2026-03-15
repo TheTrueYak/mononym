@@ -29,7 +29,7 @@ public record NameTagRenameC2SPayload(int entityId, int handId, String name) imp
 
         @Override
         public void receive(NameTagRenameC2SPayload payload, ServerPlayNetworking.Context context) {
-            Entity entity = context.player().getWorld().getEntityById(payload.entityId());
+            Entity entity = context.player().getEntityWorld().getEntityById(payload.entityId());
             if (entity instanceof PlayerEntity playerEntity) {
                 ItemStack stack = playerEntity.getStackInHand(payload.handId() == 0 ? Hand.MAIN_HAND : Hand.OFF_HAND);
                 if (stack.isOf(Items.NAME_TAG)) {

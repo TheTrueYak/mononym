@@ -25,7 +25,7 @@ public class RenameItemRecipe extends SpecialCraftingRecipe {
         ItemStack itemStack = null;
         ItemStack itemStack2 = null;
 
-        for(int i = 0; i < input.getSize(); ++i) {
+        for(int i = 0; i < input.size(); ++i) {
             ItemStack itemStack3 = input.getStackInSlot(i);
             if (!itemStack3.isEmpty()) {
                 if (itemStack == null) {
@@ -76,18 +76,12 @@ public class RenameItemRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput input) {
-        return DefaultedList.ofSize(input.getSize(), ItemStack.EMPTY);
+    public DefaultedList<ItemStack> getRecipeRemainders(CraftingRecipeInput input) {
+        return DefaultedList.ofSize(input.size(), ItemStack.EMPTY);
     }
 
     @Override
-    public boolean fits(int width, int height) {
-        return width * height >= 2;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends SpecialCraftingRecipe> getSerializer() {
         return Mononym.RENAME_ITEM;
     }
-
 }

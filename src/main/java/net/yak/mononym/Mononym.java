@@ -2,16 +2,20 @@ package net.yak.mononym;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.item.Items;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialRecipeSerializer;
+import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.yak.mononym.networking.NameTagRenameC2SPayload;
 import net.yak.mononym.recipe.RenameItemRecipe;
@@ -22,7 +26,8 @@ public class Mononym implements ModInitializer {
 	public static final String MOD_ID = "mononym";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static RecipeSerializer<RenameItemRecipe> RENAME_ITEM = registerRecipe("crafting_special_renameitem", new SpecialRecipeSerializer<>(RenameItemRecipe::new));
+	public static RecipeSerializer<RenameItemRecipe> RENAME_ITEM = registerRecipe("crafting_special_renameitem", new SpecialCraftingRecipe.SpecialRecipeSerializer<>(RenameItemRecipe::new));
+
 
 	@Override
 	public void onInitialize() {
@@ -31,6 +36,12 @@ public class Mononym implements ModInitializer {
 
 		PayloadTypeRegistry.playC2S().register(NameTagRenameC2SPayload.ID, NameTagRenameC2SPayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(NameTagRenameC2SPayload.ID, new NameTagRenameC2SPayload.Receiver());
+
+		ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, list) -> {
+			if (stack.isOf(Items.NAME_TAG)) {
+				list.add(Text.literal("[").formatted(Formatting.GRAY).append(Text.translatable("tooltip.mononym.use").formatted(Formatting.GOLD).append(Text.literal("]").append(Text.translatable("tooltip.mononym.rename")).formatted(Formatting.GRAY))));
+			}
+		});
 
 
 		FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(modContainer -> ResourceManagerHelper.registerBuiltinResourcePack(id("name_tag_recipe"), modContainer, ResourcePackActivationType.DEFAULT_ENABLED));
