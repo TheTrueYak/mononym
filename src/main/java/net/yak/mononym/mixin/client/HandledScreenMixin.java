@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.yak.mononym.Mononym;
@@ -52,12 +53,11 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             ItemStack hoveredStack = this.focusedSlot.getStack().copy();
             if (cursorStack.isOf(Items.NAME_TAG) && cursorStack.contains(DataComponentTypes.CUSTOM_NAME) && hoveredStack != null && !hoveredStack.isEmpty() && !hoveredStack.isOf(Items.NAME_TAG) && !cursorStack.getName().equals(hoveredStack.getName())) {
                 context.drawTooltip(this.textRenderer, getTooltipFromItem(client, hoveredStack), hoveredStack.getTooltipData(), mouseX, mouseY, hoveredStack.get(DataComponentTypes.TOOLTIP_STYLE));
-                Text hoveredStackText = hoveredStack.getName();
-                Text cursorStackText = cursorStack.getName();
-                int offset = TooltipComponent.of(cursorStackText.asOrderedText()).getWidth(textRenderer);
-                int i = textRenderer.getWidth(cursorStackText.asOrderedText());
+                OrderedText cursorStackText = cursorStack.getName().asOrderedText();
+                int offset = TooltipComponent.of(cursorStackText).getWidth(textRenderer);
+                int i = textRenderer.getWidth(cursorStackText);
                 int j = mouseX + offset / 2;
-                TooltipComponent tooltipComponent = TooltipComponent.of(cursorStackText.asOrderedText());
+                TooltipComponent tooltipComponent = TooltipComponent.of(cursorStackText);
                 context.drawTooltipImmediately(textRenderer, List.of(tooltipComponent), j - i / 2, mouseY - 15, HoveredTooltipPositioner.INSTANCE, cursorStack.get(DataComponentTypes.TOOLTIP_STYLE));
             }
         }

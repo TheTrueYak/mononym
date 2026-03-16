@@ -5,7 +5,8 @@
 	"name": "Mononym",
 	"description": "Makes various tweaks to name tags and also makes them more awesome",
 	"authors": [
-		"TheTrueYak"
+		"TheTrueYak",
+		"n1tr0n__ (Rename screen background art)"
 	],
 	"contact": {
 		"sources": "https://github.com/TheTrueYak/mononym"
