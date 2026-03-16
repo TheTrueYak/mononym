@@ -54,7 +54,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
                 context.drawTooltip(this.textRenderer, getTooltipFromItem(client, hoveredStack), hoveredStack.getTooltipData(), mouseX, mouseY, hoveredStack.get(DataComponentTypes.TOOLTIP_STYLE));
                 Text hoveredStackText = hoveredStack.getName();
                 Text cursorStackText = cursorStack.getName();
-                int offset = textRenderer.getWidth(hoveredStackText.asOrderedText());
+                int offset = TooltipComponent.of(cursorStackText.asOrderedText()).getWidth(textRenderer);
                 int i = textRenderer.getWidth(cursorStackText.asOrderedText());
                 int j = mouseX + offset / 2;
                 TooltipComponent tooltipComponent = TooltipComponent.of(cursorStackText.asOrderedText());

@@ -46,14 +46,14 @@ public class NametagRenameScreen extends Screen {
         this.addDrawableChild(this.textField);
         this.setInitialFocus(this.textField);
 
-        this.applyButton = new TexturedButtonWidget(halfWidth + 70, halfHeight - 8, 9, 9, APPLY_BUTTON_TEXTURES, buttonWidget -> {
+        this.applyButton = new TexturedButtonWidget(halfWidth + 70, halfHeight - 7, 9, 9, APPLY_BUTTON_TEXTURES, buttonWidget -> {
             ClientPlayNetworking.send(new NameTagRenameC2SPayload(this.client.player.getId(), this.handId, this.textField.getText()));
             this.close();
         });
         this.applyButton.active = this.canApply();
         this.addDrawableChild(applyButton);
 
-        this.cancelButton = new TexturedButtonWidget(halfWidth + 57, halfHeight - 8, 9, 9, CANCEL_BUTTON_TEXTURES, buttonWidget -> {
+        this.cancelButton = new TexturedButtonWidget(halfWidth + 57, halfHeight - 7, 9, 9, CANCEL_BUTTON_TEXTURES, buttonWidget -> {
             this.close();
         });
         this.cancelButton.active = true;
