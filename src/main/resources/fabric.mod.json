@@ -17,6 +17,9 @@
 	"entrypoints": {
 		"main": [
 			"net.yak.mononym.Mononym"
+		],
+		"client": [
+			"net.yak.mononym.MononymClient"
 		]
 	},
 	"mixins": [

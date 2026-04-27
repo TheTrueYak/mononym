@@ -24,12 +24,11 @@ public abstract class ItemMixin {
 		ItemStack stack = user.getStackInHand(hand);
 		if (stack.isOf(Items.NAME_TAG)) {
 			user.setCurrentHand(hand);
+			user.swingHand(hand);
 			if (world.isClient()) {
 				NametagRenameScreen.open(stack, hand == Hand.MAIN_HAND ? 0 : 1);
-				user.swingHand(hand);
-				return ActionResult.SUCCESS;
 			}
-			return ActionResult.PASS;
+			return ActionResult.SUCCESS;
 		}
 		return original.call(world, user, hand);
 	}

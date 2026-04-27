@@ -43,9 +43,8 @@ public class RenameItemRecipe extends SpecialCraftingRecipe {
 
         if (itemStack != null && itemStack2 != null && canCombineStacks(itemStack, itemStack2)) {
             return Pair.of(itemStack, itemStack2);
-        } else {
-            return null;
         }
+        return null;
     }
 
     private static boolean canCombineStacks(ItemStack first, ItemStack second) {
@@ -62,17 +61,16 @@ public class RenameItemRecipe extends SpecialCraftingRecipe {
         Pair<ItemStack, ItemStack> pair = this.findPair(craftingRecipeInput);
         if (pair == null) {
             return ItemStack.EMPTY;
-        } else {
-            ItemStack targetStack = pair.getFirst(); // item
-            ItemStack nameTagStack = pair.getSecond(); // name tag
-            if (targetStack.isOf(Items.NAME_TAG) && targetStack.contains(DataComponentTypes.CUSTOM_NAME)) {
-                targetStack = pair.getSecond(); // defaults to first and second, swaps if second meets conditions for first
-                nameTagStack = pair.getFirst();
-            }
-            ItemStack resultStack = targetStack.copyWithCount(1);
-            resultStack.set(DataComponentTypes.CUSTOM_NAME, nameTagStack.getName());
-            return resultStack;
         }
+        ItemStack targetStack = pair.getFirst(); // item
+        ItemStack nameTagStack = pair.getSecond(); // name tag
+        if (targetStack.isOf(Items.NAME_TAG) && targetStack.contains(DataComponentTypes.CUSTOM_NAME)) {
+            targetStack = pair.getSecond(); // defaults to first and second, swaps if second meets conditions for first
+            nameTagStack = pair.getFirst();
+        }
+        ItemStack resultStack = targetStack.copyWithCount(1);
+        resultStack.set(DataComponentTypes.CUSTOM_NAME, nameTagStack.getName());
+        return resultStack;
     }
 
     @Override
