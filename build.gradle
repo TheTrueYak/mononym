@@ -29,6 +29,13 @@ dependencies {
 	
 }
 
+fabricApi {
+	configureDataGeneration() {
+		client = true
+		modId = "mononym"
+	}
+}
+
 processResources {
 	inputs.property "version", project.version
 
